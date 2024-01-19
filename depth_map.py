@@ -67,6 +67,10 @@ def create_depth_map(selected_model):
 
 
 def draw_depth_map():
+    """
+    Draws the outputted depth map of the input image.
+    """
+    
     depth_map = cv2.imread('./rgbd_images/depth_img.jpg')
     
     output_cv2_display = cv2.normalize(depth_map, None, 0, 1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)

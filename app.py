@@ -68,8 +68,6 @@ class App:
                 
                 x, y, w, h = eyes
                 target_pos = (x + (w/2), y + (h/2))
-                # shift_x = (camera.dimensions.width/2 - (x + (w/2)))/(PARALLAX_SENSITIVITY * scale)
-                # shift_y = (camera.dimensions.height/2 - (y + (h/2)))/(PARALLAX_SENSITIVITY * scale)
             elif args.controller == 'mouse':
                 x, y = pg.mouse.get_pos()
                 target_pos = Vector2D(x, y)
@@ -105,80 +103,3 @@ class App:
 
 if __name__ == "__main__":
     app = App()
-
-
-
-# ##################
-
-
-
-
-# def run():
-    
-    
-#     active = True
-
-#     cam = Camera()
-#     while active:
-#         cam.update_frame()
-#         eyes = cam.track_eye()
-#         cam.draw_eye_tracking(eyes)
-        
-#         if cv2.waitKey(1) == ord('q'):
-#             active = False
-#             del cam
-#             cv2.destroyAllWindows()
-        
-        
-#     # while active:
-#     #     cam.update_frame()
-#     #     cam.draw_eye_tracking()
-#     #     print("aaaaa")
-#     #     if cv2.waitKey(1) == ord("q"):
-#     #         active = False
-
-#     #         del cam
-#     #         cv2.destroyAllWindows()
-
-
-# if __name__ == "__main__":
-#     run()
-
-
-# # # from eye_tracker import track_eye
-
-# # # def main():
-# # #     run = True
-# # #     while run:
-
-
-# # #         if cv2.waitKey(1) == ord('q'):
-# # #             run = False
-
-# # #     cap.release()
-# # #     cv2.destroyAllWindows()
-# # MAX_CAMERAS = 3
-# # frame = None
-# # camera = None
-
-# # for i in range(1, MAX_CAMERAS):
-# #     camera = cv2.VideoCapture(i)
-# #     if camera.read()[0]:
-# #         print(i)
-# #         break
-# #     print("Could not access camera feed")
-
-
-# # while True:
-# #     ret, frame = camera.read()
-
-# #     cv2.imshow("frame", frame)
-
-# #     if cv2.waitKey(1) == ord("q"):
-# #         break
-
-
-# # camera.release()
-# # cv2.destroyAllWindows()
-
-# # # print("Could not access camera feed")
