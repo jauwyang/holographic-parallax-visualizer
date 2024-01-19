@@ -1,0 +1,1 @@
+MiDaS (PyTorch) uses CUDA 12.1 (NViDiA)

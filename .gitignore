@@ -1,0 +1,5 @@
+venv/
+__pycache__/
+rgbd_images/*
+models/point_clouds/*
+models/mesh/*
