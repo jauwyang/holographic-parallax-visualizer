@@ -1,0 +1,46 @@
+{
+  "images": [
+    {
+      "input_src_name": "noir.JPG",
+      "parallax_layers": [
+        "000.jpg",
+        "001.jpg",
+        "002.jpg",
+        "003.jpg",
+        "004.jpg",
+        "005.jpg",
+        "006.jpg",
+        "007.jpg",
+        "008.jpg"
+      ]
+    },
+    {
+      "input_src_name": "looking_down.jpg",
+      "parallax_layers": [
+        "000.png",
+        "001.png",
+        "002.png",
+        "003.png",
+        "004.png",
+        "005.png",
+        "006.png",
+        "007.png",
+        "008.png"
+      ]
+    },
+    {
+      "input_src_name": "crowded_room.JPG",
+      "parallax_layers": [
+        "000.png",
+        "001.png",
+        "002.png",
+        "003.png",
+        "004.png",
+        "005.png",
+        "006.png",
+        "007.png",
+        "008.png"
+      ]
+    }
+  ]
+}

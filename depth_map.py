@@ -38,13 +38,15 @@ def setup_prediction_settings(input_params):
         
     return device, midas, transform 
         
-        
-def create_depth_map(selected_model):
-    device, midas_model, transform = setup_prediction_settings(selected_model)
+
+def create_depth_map(input_file, input_type, output_path):
+    if input_type == 'image':
+        device, midas_model, transform = setup_prediction_settings('large')
+    elif input_type == 'video':
+        device, midas_model, transform = setup_prediction_settings('medium')
     
-    input_image_dir_path = './input_images'
-    image_filename = os.listdir(input_image_dir_path)[0]
-    input_image = cv2.imread(os.path.join(input_image_dir_path, image_filename))
+    input_image_dir_path = os.path.join('input_src', input_file)
+    input_image = cv2.imread(input_image_dir_path)
 
     image_midas = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
 
@@ -61,12 +63,12 @@ def create_depth_map(selected_model):
 
     output = prediction.cpu().numpy()
     output = cv2.normalize(output, None, 0, 255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8UC1)
+    
+    depth_map_path = os.path.join(output_path, 'depth_map', 'depth_map.png')
+    cv2.imwrite(depth_map_path, output)
 
-    cv2.imwrite('./rgbd_images/colour_img.jpg', input_image)
-    cv2.imwrite('./rgbd_images/depth_img.jpg', output)
 
-
-def draw_depth_map():
+def draw_depth_map():  ##/FIXXXXX
     """
     Draws the outputted depth map of the input image.
     """

@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import pygame as pg
+import os
 
 WHITE = (255, 255, 255)
 DIVISION_SIZE = 30  # controls the depth distance that
@@ -21,17 +22,17 @@ def cv2alpha_image(cv_image, mask):
     
     return cv_image
 
-def cv2pygame_image(cv_image, mode='RGB'):
+def cv2pygame_image(cv_image, mode='RGBA'):
     size = cv_image.shape[1::-1]
     data = cv_image.tobytes()
-
     frame_pg = pg.image.fromstring(data, size, mode)
 
     return frame_pg
 
-def create_parallax_layers():
-    img_src = cv2.imread('./rgbd_images/colour_img.jpg')
-    depth_map = cv2.imread('./rgbd_images/depth_img.jpg')
+
+def create_parallax_layers_images(filename, file_type, image_output_folder_path):
+    img_src = cv2.imread(os.path.join('input_src', filename))
+    depth_map = cv2.imread(os.path.join(image_output_folder_path, 'depth_map', 'depth_map.png'))
     depth_map = cv2.cvtColor(depth_map, cv2.COLOR_RGB2GRAY)
     img = cv2.resize(img_src, depth_map.shape[::-1])
     
@@ -50,19 +51,37 @@ def create_parallax_layers():
         layer = cv2.bitwise_and(inpaint_image, inpaint_image, mask=curr_mask)
         
         layers.append(cv2alpha_image(layer, mask=curr_mask))
-        
+    
     # add last layer (front) of image
     mask = np.zeros(depth_map.shape, np.uint8)
     mask[:,:] = 255
     ret, prev_mask = cv2.threshold(depth_map, prev_threshold, 255, cv2.THRESH_BINARY)
     inpaint_img = cv2.inpaint(img, prev_mask, 10, cv2.INPAINT_NS)
     layer = cv2.bitwise_and(inpaint_img, inpaint_img, mask = mask)
-    layers.append(cv2alpha_image(layer, mask))
+    layer_image = cv2alpha_image(layer, mask)
+    layers.append(layer_image)
     
-    layers = layers[::-1]  # reverse order
+    layers = layers[::-1]  # reverse order (background is first, foreground last)
+    layer_names = []
     
-    return layers
+    for i, layer in enumerate(layers):
+        file_layer_name = str(i).zfill(3) + '.png'
+        layer_names.append(file_layer_name)   # create layer names for JSON metadata
+        cv2.imwrite(os.path.join(image_output_folder_path, 'layers', file_layer_name), layer)
+
+    return layer_names
+
+
+def get_parallax_layers_image(image_output_folder_path, layer_names):
+    folder_path = os.path.join(image_output_folder_path, 'layers')
+    layer_images = []
+    for layer_name in layer_names:
+        layer = cv2.imread(os.path.join(folder_path, layer_name), cv2.IMREAD_UNCHANGED)  # opencv removes alpha (transparency channel when reading so make sure to keep)
+        layer_images.append(layer)
     
+    return layer_images
+
+
 
 def draw_parallax_image(window, layers, target_pos, center_of_moveable_space, args, scale=1, offset=20, x_transform=X_TRANSFORM, y_transform=Y_TRANSFORM, sens=50):    
     shift_x = 0
