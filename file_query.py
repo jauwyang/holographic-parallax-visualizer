@@ -2,58 +2,49 @@ import cv2
 import os
 import json
 
+IMAGE_METADATA_FILE = 'input_images_metadata.json'
+VIDEO_METADATA_FILE = 'input_videos_metadata.json'
 
-def get_file_params(input_type):
-    """
-    Returns specific params needed for 
-    """
-    if input_type == 'image':
-        metadata_file = 'input_images_metadata.json'
-        empty_json_init = {
-            'images': []
-        }
-        
-    elif input_type == 'video':
-        metadata_file = 'input_videos_metadata.json'
-        empty_json_init = {
-            'videos': []
-        }
-    
-    return metadata_file, empty_json_init
+EMPTY_IMAGE_FILE_FORMAT = {
+    'images': []
+}
+EMPTY_VIDEO_FILE_FORMAT = {
+    'videos': []
+}
 
 
+# --- Images ---
 
-def input_exists(filename, input_type):
-    """
-    Checks if source input has already been computed & stored
-    """
-    metadata_file, empty_json_init = get_file_params(input_type)
-    
+def input_image_exists(filename):
     try:
-        with open(metadata_file, 'r') as file:
+        with open(IMAGE_METADATA_FILE, 'r') as file:
             json_data = json.load(file)
     except:  # if file content doesnt exist, create it and open again
-        initialize_input_metadata(input_type)
-        with open(metadata_file, 'r') as file:
+        create_image_metadata_file()
+        with open(IMAGE_METADATA_FILE, 'r') as file:
             json_data = json.load(file)
     
-    for source in json_data[str(input_type) + 's']:
+    for source in json_data['images']:
         if source['input_src_name'] == filename:
             return True
     
     return False
 
 
+def create_image_metadata_file():
+    with open(IMAGE_METADATA_FILE, 'w') as file:
+        json.dump(EMPTY_IMAGE_FILE_FORMAT, file, indent=2)
 
-def initialize_input_metadata(input_type):
-    """
-    Initializes json file format
-    """
-    metadata_file, empty_json_init = get_file_params(input_type)
+
+def read_image_metadata(input_name):
+    with open(IMAGE_METADATA_FILE, 'r') as file:
+        file_data = json.load(file)
     
-    with open(metadata_file, 'w') as file:
-        json.dump(empty_json_init, file, indent=2)
-
+    for metadata in file_data['images']:
+        if metadata['input_src_name'] == input_name:
+            return metadata
+    
+    print('ERROR: Image metadata not found when it should have.')
 
 
 def write_image_metadata(input_name, layers):
@@ -61,10 +52,8 @@ def write_image_metadata(input_name, layers):
         'input_src_name': input_name,
         'parallax_layers': layers,
     }
-    
-    metadata_file, empty_json_init = get_file_params('image')
-    
-    with open(metadata_file, 'r+') as file:
+
+    with open(IMAGE_METADATA_FILE, 'r+') as file:
         # Get current data
         file_data = json.load(file)
         file_data['images'].append(data)
@@ -74,16 +63,55 @@ def write_image_metadata(input_name, layers):
         json.dump(file_data, file, indent=2)
 
 
-def read_image_metadata(input_name):
-    metadata_file, empty_json_init = get_file_params('image')
-    with open(metadata_file, 'r') as file:
-        file_data = json.load(file)
+# --- Videos ---
+
+def input_video_exists(filename):
+    try:
+        with open(VIDEO_METADATA_FILE, 'r') as file:
+            json_data = json.load(file)
+    except:  # if file content doesnt exist, create it and open again
+        create_video_metadata_file()
+        with open(VIDEO_METADATA_FILE, 'r') as file:
+            json_data = json.load(file)
     
-    for metadata in file_data['images']:
+    for source in json_data['videos']:
+        if source['input_src_name'] == filename:
+            return True
+    
+    return False
+
+def create_video_metadata_file():
+    with open(VIDEO_METADATA_FILE, 'w') as file:
+        json.dump(EMPTY_VIDEO_FILE_FORMAT, file, indent=2)
+
+
+def read_video_metadata(input_name):
+    with open(VIDEO_METADATA_FILE, 'r') as file:
+        file_data = json.load(file)
+        
+    for metadata in file_data['videos']:
         if metadata['input_src_name'] == input_name:
             return metadata
     
-    print('File not found: ERROR')
+    print('ERROR: Video metadata not found when it should have.')
+
+
+def write_video_metadata(input_name, frames, frame_count):
+    data = {
+        'input_src_name': input_name,
+        'frame_count': frame_count,
+        'frames': frames,
+    }
+    
+    with open(VIDEO_METADATA_FILE, 'r+') as file:
+        # Get current data
+        file_data = json.load(file)
+        file_data['videos'].append(data)
+        
+        file.seek(0)  # reset read/write position to start
+        
+        json.dump(file_data, file, indent=2)
+
     
 
 def delete_all_data():
@@ -94,27 +122,3 @@ def delete_all_data():
     
     with open('input_videos_metadata.json', 'w') as file:
         print("Deleted Video Metadata")
-    
-    
-# def video2frames(video_path, output_path):
-#     cap = cv2.VideoCapture(video_path)
-    
-#     if not os.path.exists(output_path):
-#         os.makedirs(output_path)
-        
-#     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-#     fps = int(cap.get(cv2.CAP_PROP_FPS))
-    
-#     for frame_index in range(frame_count):
-#         ret, frame = cap.read()
-        
-#         if not ret:
-#             break
-        
-#         frame_path = os.path.join(output_path)
-        
-#     frames = []
-    
-#     cap.release()
-    
-#     return frames

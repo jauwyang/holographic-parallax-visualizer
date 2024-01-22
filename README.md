@@ -2,13 +2,13 @@
 
 ## Summary
 
-This program converts any standard 2D image (e.g. .jpg, .png, etc.) into a 3D holographic image with a parallax effect. It tracks the position of the user's face and shifts the parallax perspective accordingly to create a 3D depth illusion. The program can alternatively track the position of the mouse instead.
+This program converts any standard 2D image or video (e.g. .jpg, .mp4, etc.) into a 3D holographic scene with a parallax effect. It tracks the position of the user's face and shifts the parallax perspective accordingly to create a 3D depth illusion. The program can alternatively track the position of the mouse instead.
 
 ## How It Works
 
 ![](/markdown_sample_assets/gwen_stacy_parallax.gif)
 
-TLDR: The program computes the relative depth of all elements of an image and groups regions of similar depths into different layers that shift at varying speeds based on their depth - closer layers move faster, further layers move slower.
+For simplicity, let's explain using a single framed image.
 
 The program takes the desired image as input (in `/input_images`) and passes it into the [MiDaS Model](https://pytorch.org/hub/intelisl_midas_v2/) which computes the relative depth from this single image and outputs the corresponding depth map image.
 
@@ -33,6 +33,20 @@ These layers will then be placed ontop of each other with the "furthest" layer a
 
 Each layer will be shifted relative to a "focal point" - this is either the tracked position of the user's face or mouse. The movement speeds of these layers are based on relative depth of each layer - closer layers move faster, further layers move slower.
 
+***TLDR***: The program computes the relative depth of all elements of an image and groups regions of similar depths into different layers that shift at varying speeds based on their depth - closer layers move faster, further layers move slower.
+
+For videos, the process above is repeated for every frame in the clip. This takes a much longer time to process the entire scene, so the MiDaS depth model used is lighter than when selecting an `image` as input. Regardless, the computing time for a 720p video took about 30 seconds for each frame or 15 minutes to process 1 second in a 30 fps video.
+
+## Other Examples
+
+### Videos
+
+![](/markdown_sample_assets/regular_avengers.gif)
+![](/markdown_sample_assets/parallax_sensitive_avengers.gif)
+
+**Note**: it is recommended to increase the sensitivity of the parallax effect for videos since the movements of the scene make the holographic effect less noticeable.
+
+
 ## How to Use
 
 Create a virtual environment: `python -m venv venv`
@@ -43,7 +57,9 @@ Install required python packages: `pip install -r requirements.txt`
 
 Run the program: 
 
-`python app.py --model 'large' --view '2d' --controller 'mouse'`
+`python app.py --controller 'mouse' --input 'avengers.mp4' --intype 'video'`
+
+`python app.py --controller 'mouse' --input 'crowded_room.JPG' --intype 'image'`
 
 
 

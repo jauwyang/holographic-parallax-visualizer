@@ -39,15 +39,14 @@ def setup_prediction_settings(input_params):
     return device, midas, transform 
         
 
-def create_depth_map(input_file, input_type, output_path):
+def create_depth_map(input_image_dir_path, input_type, output_path):
     if input_type == 'image':
         device, midas_model, transform = setup_prediction_settings('large')
+        input_image = cv2.imread(input_image_dir_path)
     elif input_type == 'video':
         device, midas_model, transform = setup_prediction_settings('medium')
+        input_image = input_image_dir_path
     
-    input_image_dir_path = os.path.join('input_src', input_file)
-    input_image = cv2.imread(input_image_dir_path)
-
     image_midas = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
 
     imgbatch = transform(image_midas).to(device)

@@ -5,7 +5,7 @@ import os
 
 WHITE = (255, 255, 255)
 DIVISION_SIZE = 30  # controls the depth distance that
-PARALLAX_SENSITIVITY = 50
+PARALLAX_SENSITIVITY = 32
 X_TRANSFORM = True
 Y_TRANSFORM = True
 
@@ -30,8 +30,12 @@ def cv2pygame_image(cv_image, mode='RGBA'):
     return frame_pg
 
 
-def create_parallax_layers_images(filename, file_type, image_output_folder_path):
-    img_src = cv2.imread(os.path.join('input_src', filename))
+def create_parallax_layers_images(img_path, input_type, image_output_folder_path):
+    if input_type == 'image':
+        img_src = cv2.imread(img_path)
+    elif input_type == 'video':
+        img_src = img_path
+        
     depth_map = cv2.imread(os.path.join(image_output_folder_path, 'depth_map', 'depth_map.png'))
     depth_map = cv2.cvtColor(depth_map, cv2.COLOR_RGB2GRAY)
     img = cv2.resize(img_src, depth_map.shape[::-1])
@@ -83,13 +87,13 @@ def get_parallax_layers_image(image_output_folder_path, layer_names):
 
 
 
-def draw_parallax_image(window, layers, target_pos, center_of_moveable_space, args, scale=1, offset=20, x_transform=X_TRANSFORM, y_transform=Y_TRANSFORM, sens=50):    
+def draw_parallax_image(window, layers, target_pos, center_of_moveable_space, args, scale=1, offset=20, x_transform=X_TRANSFORM, y_transform=Y_TRANSFORM, sens=PARALLAX_SENSITIVITY):    
     shift_x = 0
     shift_y = 0
     
     if (target_pos is not None):
-        shift_x = (center_of_moveable_space.x - target_pos.x)/(PARALLAX_SENSITIVITY * scale)
-        shift_y = (center_of_moveable_space.y - target_pos.y)/(PARALLAX_SENSITIVITY * scale)
+        shift_x = (center_of_moveable_space.x - target_pos.x)/(sens * scale)
+        shift_y = (center_of_moveable_space.y - target_pos.y)/(sens * scale)
     
     # Draw Frame    
     window.fill(WHITE)
