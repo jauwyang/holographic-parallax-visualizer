@@ -41,10 +41,21 @@ For videos, the process above is repeated for every frame in the clip. This take
 
 ### Videos
 
+AVENGERS
+
 ![](/markdown_sample_assets/regular_avengers.gif)
 ![](/markdown_sample_assets/parallax_sensitive_avengers.gif)
 
-**Note**: it is recommended to increase the sensitivity of the parallax effect for videos since the movements of the scene make the holographic effect less noticeable.
+WONDER WOMAN
+
+![](/markdown_sample_assets/regular_wonderwoman.gif)
+![](/markdown_sample_assets/parallax_sensitive_wonderwoman.gif)
+
+
+**Recommendations when using:**: 
+* increase the sensitivity of the parallax effect for videos since the movements of the scene make the holographic effect less noticeable.
+* stay roughly below 10s in length for videos
+* can decrease the scale of the output video (`SCALE`) to decrease memory usage during visualization
 
 
 ## How to Use
