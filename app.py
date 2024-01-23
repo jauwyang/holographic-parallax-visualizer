@@ -4,14 +4,14 @@ import pygame as pg
 import os
 
 from depth_map import create_depth_map, draw_depth_map
-from model import create_point_cloud, draw_point_cloud, create_mesh, draw_mesh
+# from archive_build.model.model import create_point_cloud, draw_point_cloud, create_mesh, draw_mesh
 from layered_parallax import (
     create_parallax_layers_images,
     get_parallax_layers_image,
     draw_parallax_image,
     cv2pygame_image,
 )
-from utils import Vector2D
+from utils import Vector2D, printProgressBar
 from camera import Camera
 from file_query import (
     input_image_exists,
@@ -25,7 +25,7 @@ from file_query import (
 from video import video2frames
 
 
-SCALE = 1  # scale of screen
+SCALE = 0.5  # scale of screen
 BORDERS = 20
 
 
@@ -94,6 +94,7 @@ class App:
 
                     frames = {}
 
+                    print(" >>> Generating layers for " + str(frame_count) + " frames...")
                     for i, frame in enumerate(video_frames):
                         counter = str(i).zfill(4)
                         frame_folder_name = "frame" + counter
@@ -111,6 +112,10 @@ class App:
                             os.path.join(single_frame_path, "layers")
                         )  # creates 'layers' dir for all layers for 1 frame (e.g. './frame001/layers/')
 
+                        suffix = "Complete (frame " + str(i + 1) + "/" + str(frame_count) + ")"
+                        printProgressBar(i, frame_count, prefix=' >>> Progress', suffix=suffix, length=50)
+                        print(' ')
+                        
                         # Create depth map for 1 frame
                         create_depth_map(frame, file_type, single_frame_path)
 
@@ -120,12 +125,17 @@ class App:
                         )
 
                         frames["parallax_layers" + counter] = layer_names
-
+                        
                     write_video_metadata(filename, frames, frame_count)
+                    
 
             else:
                 print("ERROR: Folder already exists but shouldn't")
                 return
+        
+        # return  #JOSH TEMP TO NOT DISPLAY IMAGE
+    
+    
         # output/
         # | -- images/
         # |    | -- image01/

@@ -56,6 +56,8 @@ WONDER WOMAN
 * increase the sensitivity of the parallax effect for videos since the movements of the scene make the holographic effect less noticeable.
 * stay roughly below 10s in length for videos
 * can decrease the scale of the output video (`SCALE`) to decrease memory usage during visualization
+* make sure there are no black bars in the input
+* try testing the video before computing it (avoid long wait time for bad result) by inputting 1 frame image of the shot. 
 
 
 ## How to Use
