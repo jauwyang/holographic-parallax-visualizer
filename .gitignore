@@ -3,3 +3,6 @@ __pycache__/
 rgbd_images/*
 models/point_clouds/*
 models/mesh/*
+input_src/*
+output/images/*
+output/videos/
