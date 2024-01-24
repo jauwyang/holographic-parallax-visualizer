@@ -6,3 +6,4 @@ models/mesh/*
 input_src/*
 output/images/*
 output/videos/
+input_metadata.json

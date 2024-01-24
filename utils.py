@@ -46,3 +46,8 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     # Print New Line on Complete
     if iteration == total: 
         print()
+        
+def print_video_progression(iteration, total):
+    suffix = "Complete (frame " + str(iteration + 1) + "/" + str(total) + ")"
+    printProgressBar(iteration, total, prefix=' >>> Progress', suffix=suffix, length=50)
+    print(' ')

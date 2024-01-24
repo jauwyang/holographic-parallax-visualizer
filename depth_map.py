@@ -39,15 +39,13 @@ def setup_prediction_settings(input_params):
     return device, midas, transform 
         
 
-def create_depth_map(input_image_dir_path, input_type, output_path):
+def create_depth_map(input_frame, input_type, output_path):
     if input_type == 'image':
         device, midas_model, transform = setup_prediction_settings('large')
-        input_image = cv2.imread(input_image_dir_path)
     elif input_type == 'video':
         device, midas_model, transform = setup_prediction_settings('medium')
-        input_image = input_image_dir_path
     
-    image_midas = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
+    image_midas = cv2.cvtColor(input_frame, cv2.COLOR_BGR2RGB)
 
     imgbatch = transform(image_midas).to(device)
 
@@ -65,14 +63,3 @@ def create_depth_map(input_image_dir_path, input_type, output_path):
     
     depth_map_path = os.path.join(output_path, 'depth_map', 'depth_map.png')
     cv2.imwrite(depth_map_path, output)
-
-
-def draw_depth_map():  ##/FIXXXXX
-    """
-    Draws the outputted depth map of the input image.
-    """
-    
-    depth_map = cv2.imread('./rgbd_images/depth_img.jpg')
-    
-    output_cv2_display = cv2.normalize(depth_map, None, 0, 1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
-    cv2.imshow('Depth Map', output_cv2_display)

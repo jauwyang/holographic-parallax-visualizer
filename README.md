@@ -1,5 +1,7 @@
 # Holographic Parallax Visualizer
 
+*By: Joshua Auw-Yang*
+
 ## Summary
 
 This program converts any standard 2D image or video (e.g. .jpg, .mp4, etc.) into a 3D holographic scene with a parallax effect. It tracks the position of the user's face and shifts the parallax perspective accordingly to create a 3D depth illusion. The program can alternatively track the position of the mouse instead.
@@ -7,10 +9,11 @@ This program converts any standard 2D image or video (e.g. .jpg, .mp4, etc.) int
 ## How It Works
 
 ![](/markdown_sample_assets/gwen_stacy_parallax.gif)
+![](/markdown_sample_assets/parallax_sensitive_wonderwoman.gif)
 
 For simplicity, let's explain using a single framed image.
 
-The program takes the desired image as input (in `/input_images`) and passes it into the [MiDaS Model](https://pytorch.org/hub/intelisl_midas_v2/) which computes the relative depth from this single image and outputs the corresponding depth map image.
+The program takes the desired image as input (in `/input_src`) and passes it into the [MiDaS Model](https://pytorch.org/hub/intelisl_midas_v2/) which computes the relative depth from this single image and outputs the corresponding depth map image.
 
 Below are sample input and depth map images (depth map is converted to greyscale below)
 ![Input sample image](/markdown_sample_assets/gwen_stacy_src.JPG "Sample Input")
@@ -37,7 +40,7 @@ Each layer will be shifted relative to a "focal point" - this is either the trac
 
 For videos, the process above is repeated for every frame in the clip. This takes a much longer time to process the entire scene, so the MiDaS depth model used is lighter than when selecting an `image` as input. Regardless, the computing time for a 720p video took about 30 seconds for each frame or 15 minutes to process 1 second in a 30 fps video.
 
-## Other Examples
+## Comparison Examples
 
 ### Videos
 
@@ -55,12 +58,14 @@ WONDER WOMAN
 **Recommendations when using:**: 
 * increase the sensitivity of the parallax effect for videos since the movements of the scene make the holographic effect less noticeable.
 * stay roughly below 10s in length for videos
-* can decrease the scale of the output video (`SCALE`) to decrease memory usage during visualization
-* make sure there are no black bars in the input
-* try testing the video before computing it (avoid long wait time for bad result) by inputting 1 frame image of the shot. 
+* decrease the scale of the output video (`SCALE`) to decrease memory usage during visualization
+* make sure there are no black bars in the input otherwise they will be considered as 'objects' in the scene
+* try testing the video before computing it (avoid long wait time for bad result) by inputting 1 frame image of the shot 
 
 
 ## How to Use
+
+### Setup
 
 Create a virtual environment: `python -m venv venv`
 
@@ -68,14 +73,34 @@ Enter the virtual environment: `venv\Scripts\activate`
 
 Install required python packages: `pip install -r requirements.txt`
 
-Run the program: 
+### Running the program
 
-`python app.py --controller 'mouse' --input 'avengers.mp4' --intype 'video'`
+Copy desired input image/video into the `input_src` directory
 
-`python app.py --controller 'mouse' --input 'crowded_room.JPG' --intype 'image'`
+Run `app.py` using the following parameters:
 
+* `--input`: [str] (required) name of target input including file extension (e.g. 'image.png')
+* `--intype`: [str] (required) specify input type (either `image` or `video`)
+* `--controller`: [str] (required) method to control the parallax movement (either `face` or `video`)
+* `-onlybuild`: [-] Program attempts to build and run by default. Including this causes it to only build
 
+Example CLI inputs:
 
+`python app.py --input 'wonderwoman.mp4' --intype 'video' --controller 'mouse'`
 
+`python app.py  --input 'crowded_room.JPG' --intype 'image' --controller 'face'`
 
-MiDaS (PyTorch) uses CUDA 12.1 (NViDiA)
+### Configuration
+
+The user can adjust the build and run settings of the program in `config.py`
+* `SCALE`: controls scale/size of the visualizer screen (SCALE = 1 uses same resolution as image)
+* `PARALLAX_SENSITIVITY`: controls how sensitive parallax effect is to user movement (lower value = higher sensitivity)
+* `X_TRANSFORM`: controls if parallax movement occurs horizontally
+* `Y_TRANSFORM`: controls if parallax movement occurs vertically
+* `DIVISION_SIZE`: controls depth ranges of each parallax layer (consequently controls no. of parallax layers)  
+
+### Internal Workings
+
+* The output depth map and parallax image layers are all saved into `./output` to prevent user from constantly building the same input files
+
+* `input_metadata.json` is used to track input files that have already been computed
